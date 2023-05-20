@@ -2,6 +2,8 @@
     "name": "tggl/client",
     "description": "Tggl PHP client",
     "type": "library",
+    "license": "MIT",
+    "version": "1.0.0",
     "autoload": {
         "psr-4": {
             "Tggl\\Client\\": "src/"
