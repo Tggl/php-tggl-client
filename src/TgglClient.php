@@ -4,30 +4,39 @@ namespace Tggl\Client;
 
 use Exception;
 
-class TgglLocalClient
+class TgglClient
 {
     protected string $apiKey;
-    /** @var Flag[] */
-    protected array $config;
     protected string $url;
 
     public function __construct(string $apiKey, array $options = [])
     {
         $this->apiKey = $apiKey;
-        $this->config = $options['config'] ?? [];
-        $this->url = $options['url'] ?? 'https://api.tggl.io/config';
+        $this->url = $options['url'] ?? 'https://api.tggl.io/flags';
+    }
+
+    public function evalContext($context)
+    {
+        return $this->evalContexts([$context])[0];
     }
 
     /**
+     * @return TgglResponse[]
      * @throws Exception
      */
-    public function fetchConfig()
+    public function evalContexts(array $contexts): array
     {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['X-Tggl-Api-Key: ' . $this->apiKey]);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'X-Tggl-Api-Key: ' . $this->apiKey,
+            'Content-Type: application/json',
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($contexts));
+
 
         $result = curl_exec($ch);
 
@@ -46,22 +55,10 @@ class TgglLocalClient
             throw new Exception($decoded->error);
         }
 
-        $this->config = [];
-
-        foreach ($decoded as $config) {
-            $this->config[$config->slug] = Flag::fromConfig($config);
-        }
-
-        return $this->config;
-    }
-
-    public function isActive($context, string $slug)
-    {
-        return array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context)->active : false;
-    }
-
-    public function get($context, string $slug, $defaultValue = null)
-    {
-        return array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context)->value : $defaultValue;
+        print_r(json_encode($contexts));
+        print_r($decoded);
+        return array_map(function ($flags) {
+            return new TgglResponse($flags);
+        }, $decoded);
     }
 }
