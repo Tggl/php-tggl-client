@@ -55,8 +55,6 @@ class TgglClient
             throw new Exception($decoded->error);
         }
 
-        print_r(json_encode($contexts));
-        print_r($decoded);
         return array_map(function ($flags) {
             return new TgglResponse($flags);
         }, $decoded);
