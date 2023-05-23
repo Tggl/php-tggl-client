@@ -5,7 +5,7 @@ namespace Tggl\Client;
 class Variation
 {
     public bool $active;
-    public mixed $value;
+    public $value;
 
     public static function fromConfig($config)
     {
