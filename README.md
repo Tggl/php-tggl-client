@@ -1,3 +1,3 @@
 # Tggl PHP client
 
-[Read documentation](https://doc.tggl.io/docs/sdks/list/php)
+[Read documentation](https://tggl.io/developers/sdks/php)

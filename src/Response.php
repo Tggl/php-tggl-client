@@ -20,4 +20,9 @@ class Response
     {
         return array_key_exists($slug, $this->flags) ? $this->flags[$slug] : $defaultValue;
     }
+
+    public function getAllActiveFlags()
+    {
+        return $this->flags;
+    }
 }
