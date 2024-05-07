@@ -19,7 +19,7 @@ class StandardTest extends TestCase
 
     public static function provider()
     {
-        $config = json_decode(file_get_contents('standard_tests.json'));
+        $config = json_decode(file_get_contents('./tests/standard_tests.json'));
 
         return array_reduce($config, function ($carry, $item) use ($config) {
             $carry[$item->name] = [$item];

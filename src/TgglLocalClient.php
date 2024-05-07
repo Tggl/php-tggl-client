@@ -62,6 +62,28 @@ class TgglLocalClient
 
     public function get($context, string $slug, $defaultValue = null)
     {
-        return array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context)->value : $defaultValue;
+        $inactiveVariation = new Variation();
+        $inactiveVariation->active = false;
+        $inactiveVariation->value = null;
+
+        $result = array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context) : $inactiveVariation;
+        return $result->active ? $result->value : $defaultValue;
+    }
+
+    public function getAllActiveFlags($context)
+    {
+        return array_map(
+            function ($flag) {
+                return $flag->value;
+            },
+            array_filter(
+                array_map(function ($flag) {
+                    return $flag->eval($context);
+                }, $this->config),
+                function ($flag) {
+                    return $flag->active;
+                }
+            )
+        );
     }
 }
