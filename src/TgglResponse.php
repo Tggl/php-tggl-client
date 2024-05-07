@@ -20,4 +20,9 @@ class TgglResponse
     {
         return property_exists($this->flags, $slug) ? $this->flags->{$slug} : $defaultValue;
     }
+
+    public function getAllActiveFlags()
+    {
+        return $this->flags;
+    }
 }
