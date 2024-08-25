@@ -6,16 +6,30 @@ use Exception;
 
 class TgglLocalClient
 {
-    protected string $apiKey;
+    protected $apiKey;
     /** @var Flag[] */
     protected array $config;
     protected string $url;
+    protected $reporter;
 
-    public function __construct(string $apiKey, array $options = [])
+    public function __construct($apiKey = null, array $options = [])
     {
         $this->apiKey = $apiKey;
         $this->config = $options['config'] ?? [];
         $this->url = $options['url'] ?? 'https://api.tggl.io/config';
+        $this->reporter = (array_key_exists('reporting', $options) && $options['reporting'] === false) || $apiKey === null
+            ? null
+            : new TgglReporting($apiKey, [
+                'app' =>
+                  array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['app'])
+                    ? $options['reporting']['app']
+                    : null,
+                'appPrefix' => 'php-client:1.4.0/TgglLocalClient',
+                'url' =>
+                  array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['url'])
+                    ? $options['reporting']['url']
+                    : null,
+              ]);
     }
 
     /**
@@ -57,7 +71,18 @@ class TgglLocalClient
 
     public function isActive($context, string $slug)
     {
-        return array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context)->active : false;
+        $inactiveVariation = new Variation();
+        $inactiveVariation->active = false;
+        $inactiveVariation->value = null;
+
+        $result = array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context) : $inactiveVariation;
+
+        if (isset($this->reporter)) {
+            $this->reporter->reportFlag($slug, $result->active, $result->value);
+            $this->reporter->reportContext($context);
+        }
+
+        return $result->active;
     }
 
     public function get($context, string $slug, $defaultValue = null)
@@ -67,7 +92,14 @@ class TgglLocalClient
         $inactiveVariation->value = null;
 
         $result = array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context) : $inactiveVariation;
-        return $result->active ? $result->value : $defaultValue;
+        $value = $result->active ? $result->value : $defaultValue;
+
+        if (isset($this->reporter)) {
+            $this->reporter->reportFlag($slug, $result->active, $value, $defaultValue);
+            $this->reporter->reportContext($context);
+        }
+
+        return $value;
     }
 
     public function getAllActiveFlags($context)
@@ -77,7 +109,7 @@ class TgglLocalClient
                 return $flag->value;
             },
             array_filter(
-                array_map(function ($flag) {
+                array_map(function ($flag) use ($context) {
                     return $flag->eval($context);
                 }, $this->config),
                 function ($flag) {

@@ -5,20 +5,34 @@ namespace Tggl\Client;
 class TgglResponse
 {
     protected $flags;
+    protected $reporter;
 
-    public function __construct($flags)
+    public function __construct($flags, $reporter = null)
     {
         $this->flags = $flags;
+        $this->reporter = $reporter;
     }
 
     public function isActive(string $slug)
     {
-        return property_exists($this->flags, $slug);
+        $active = property_exists($this->flags, $slug);
+
+        if (isset($this->reporter)) {
+            $this->reporter->reportFlag($slug, $active, $active ? $this->flags->{$slug} : null);
+        }
+
+        return $active;
     }
 
     public function get(string $slug, $defaultValue = null)
     {
-        return property_exists($this->flags, $slug) ? $this->flags->{$slug} : $defaultValue;
+        $value = property_exists($this->flags, $slug) ? $this->flags->{$slug} : $defaultValue;
+
+        if (isset($this->reporter)) {
+            $this->reporter->reportFlag($slug, $active, $value, $defaultValue);
+        }
+
+        return $value;
     }
 
     public function getAllActiveFlags()

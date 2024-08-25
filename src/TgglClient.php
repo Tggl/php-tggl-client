@@ -6,13 +6,27 @@ use Exception;
 
 class TgglClient
 {
-    protected string $apiKey;
+    protected $apiKey;
     protected string $url;
+    protected $reporter;
 
-    public function __construct(string $apiKey, array $options = [])
+    public function __construct($apiKey = null, array $options = [])
     {
         $this->apiKey = $apiKey;
         $this->url = $options['url'] ?? 'https://api.tggl.io/flags';
+        $this->reporter = (array_key_exists('reporting', $options) && $options['reporting'] === false) || $apiKey === null
+            ? null
+            : new TgglReporting($apiKey, [
+                'app' =>
+                  array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['app'])
+                    ? $options['reporting']['app']
+                    : null,
+                'appPrefix' => 'php-client:1.4.0/TgglClient',
+                'url' =>
+                  array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['url'])
+                    ? $options['reporting']['url']
+                    : null,
+              ]);
     }
 
     public function evalContext($context)
@@ -56,7 +70,7 @@ class TgglClient
         }
 
         return array_map(function ($flags) {
-            return new TgglResponse($flags);
+            return new TgglResponse($flags, $this->reporter);
         }, $decoded);
     }
 }
