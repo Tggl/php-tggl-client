@@ -24,7 +24,7 @@ class TgglLocalClient
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['app'])
                     ? $options['reporting']['app']
                     : null,
-                'appPrefix' => 'php-client:1.4.0/TgglLocalClient',
+                'appPrefix' => 'php-client:1.4.1/TgglLocalClient',
                 'url' =>
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['url'])
                     ? $options['reporting']['url']
@@ -104,6 +104,10 @@ class TgglLocalClient
 
     public function getAllActiveFlags($context)
     {
+        if (isset($this->reporter)) {
+            $this->reporter->reportContext($context);
+        }
+
         return array_map(
             function ($flag) {
                 return $flag->value;

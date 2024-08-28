@@ -21,7 +21,7 @@ class TgglClient
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['app'])
                     ? $options['reporting']['app']
                     : null,
-                'appPrefix' => 'php-client:1.4.0/TgglClient',
+                'appPrefix' => 'php-client:1.4.1/TgglClient',
                 'url' =>
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['url'])
                     ? $options['reporting']['url']
