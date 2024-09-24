@@ -26,7 +26,8 @@ class TgglResponse
 
     public function get(string $slug, $defaultValue = null)
     {
-        $value = property_exists($this->flags, $slug) ? $this->flags->{$slug} : $defaultValue;
+        $active = property_exists($this->flags, $slug);
+        $value = $active ? $this->flags->{$slug} : $defaultValue;
 
         if (isset($this->reporter)) {
             $this->reporter->reportFlag($slug, $active, $value, $defaultValue);
