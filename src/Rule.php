@@ -138,14 +138,14 @@ class Rule
             if (gettype($value) !== 'string') {
                 return false;
             }
-            return $value >= $this->value;
+            return ($value >= $this->value) !== ($this->negate ?? false);
         }
 
         if ($this->operator === Operator::StrBefore) {
             if (gettype($value) !== 'string') {
                 return false;
             }
-            return $value <= $this->value;
+            return ($value <= $this->value) !== ($this->negate ?? false);
         }
 
 
@@ -196,15 +196,15 @@ class Rule
                 $val =
                     substr($value, 0, strlen('2000-01-01T23:59:59')) .
                     substr('2000-01-01T23:59:59', strlen($value));
-                return $this->iso <= $val;
+                return ($this->iso <= $val) !== ($this->negate ?? false);
             }
 
             if (gettype($value) === 'integer' || gettype($value) === 'double') {
                 if ($value < 631152000000) {
-                    return $value * 1000 >= $this->timestamp;
+                    return ($value * 1000 >= $this->timestamp) !== ($this->negate ?? false);
                 }
 
-                return $value >= $this->timestamp;
+                return ($value >= $this->timestamp) !== ($this->negate ?? false);
             }
 
             return false;
@@ -215,15 +215,15 @@ class Rule
                 $val =
                     substr($value, 0, strlen('2000-01-01T00:00:00')) .
                     substr('2000-01-01T00:00:00', strlen($value));
-                return $this->iso >= $val;
+                return ($this->iso >= $val) !== ($this->negate ?? false);
             }
 
             if (gettype($value) === 'integer' || gettype($value) === 'double') {
                 if ($value < 631152000000) {
-                    return $value * 1000 <= $this->timestamp;
+                    return ($value * 1000 <= $this->timestamp) !== ($this->negate ?? false);
                 }
 
-                return $value <= $this->timestamp;
+                return ($value <= $this->timestamp) !== ($this->negate ?? false);
             }
 
             return false;
@@ -304,7 +304,7 @@ class Rule
                 $probability -= 1.0e-8;
             }
 
-            return $probability >= $this->rangeStart && $probability < $this->rangeEnd;
+            return ($probability >= $this->rangeStart && $probability < $this->rangeEnd) !== ($this->negate ?? false);
         }
 
         throw new Exception("Unsupported operator {$this->operator}");
