@@ -1,6 +1,16 @@
 {
     "name": "tggl/client",
-    "description": "Tggl PHP client",
+    "description": "Tggl PHP SDK",
+    "homepage": "https://tggl.io/developers/sdks/php",
+    "keywords": [
+        "Tggl",
+        "SDK",
+        "Feature flag",
+        "Feature toggle",
+        "A/B testing",
+        "Remote config",
+        "Kill switch"
+    ],
     "type": "library",
     "license": "MIT",
     "version": "1.4.1",
