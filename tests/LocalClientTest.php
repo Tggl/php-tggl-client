@@ -6,52 +6,11 @@ use PHPUnit\Framework\TestCase;
 
 class LocalClientTest extends TestCase
 {
-    public function testIsActiveUnknownFlag()
-    {
-        $client = new TgglLocalClient('foo');
-
-        $this->assertEquals($client->isActive(new stdClass(), 'my_feature'), false);
-    }
-
-    public function testIsActiveKnownFlag()
-    {
-        $my_feature = new stdClass();
-        $my_feature->conditions = [];
-        $my_feature->defaultVariation = new stdClass();
-        $my_feature->defaultVariation->active = true;
-        $my_feature->defaultVariation->value = 'foo';
-
-        $client = new TgglLocalClient('foo', [
-            'config' => [
-                'my_feature' => Flag::fromConfig($my_feature),
-            ],
-        ]);
-
-        $this->assertEquals($client->isActive(new stdClass(), 'my_feature'), true);
-    }
-
-    public function testIsActiveKnownInactiveFlag()
-    {
-        $my_feature = new stdClass();
-        $my_feature->conditions = [];
-        $my_feature->defaultVariation = new stdClass();
-        $my_feature->defaultVariation->active = false;
-        $my_feature->defaultVariation->value = null;
-
-        $client = new TgglLocalClient('foo', [
-            'config' => [
-                'my_feature' => Flag::fromConfig($my_feature),
-            ],
-        ]);
-
-        $this->assertEquals($client->isActive(new stdClass(), 'my_feature'), false);
-    }
-
     public function testGetUnknownFlag()
     {
         $client = new TgglLocalClient('foo');
 
-        $this->assertEquals($client->get(new stdClass(), 'my_feature'), null);
+        $this->assertEquals($client->get(new stdClass(), 'my_feature', null), null);
         $this->assertEquals($client->get(new stdClass(), 'my_feature', 'default value'), 'default value');
     }
 
@@ -69,7 +28,7 @@ class LocalClientTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals($client->get(new stdClass(), 'my_feature'), 'foo');
+        $this->assertEquals($client->get(new stdClass(), 'my_feature', null), 'foo');
         $this->assertEquals($client->get(new stdClass(), 'my_feature', 'bar'), 'foo');
     }
 
@@ -87,7 +46,7 @@ class LocalClientTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals($client->get(new stdClass(), 'my_feature'), null);
+        $this->assertEquals($client->get(new stdClass(), 'my_feature', null), null);
         $this->assertEquals($client->get(new stdClass(), 'my_feature', 'default value'), 'default value');
     }
 

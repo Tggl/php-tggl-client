@@ -33,7 +33,7 @@ class ReportingTest extends TestCase
 
     public function testSingleFlag()
     {
-        $this->reporter->reportFlag('my_feature', false);
+        $this->reporter->reportFlag('my_feature', null, null);
         $this->reporter->sendReport();
 
         $this->assertEquals($this->reporter->apiClient->calls, [[
@@ -46,7 +46,6 @@ class ReportingTest extends TestCase
                         'flags' => [
                             'my_feature' => [
                                 [
-                                    'active' => false,
                                     'value' => null,
                                     'default' => null,
                                     'count' => 1
@@ -61,7 +60,7 @@ class ReportingTest extends TestCase
 
     public function testSingleFlagWithValueAndDefault()
     {
-        $this->reporter->reportFlag('my_feature', true, 5, 'foo');
+        $this->reporter->reportFlag('my_feature', 5, 'foo');
         $this->reporter->sendReport();
 
         $this->assertEquals($this->reporter->apiClient->calls, [[
@@ -74,7 +73,6 @@ class ReportingTest extends TestCase
                         'flags' => [
                             'my_feature' => [
                                 [
-                                    'active' => true,
                                     'value' => 5,
                                     'default' => 'foo',
                                     'count' => 1
@@ -89,9 +87,9 @@ class ReportingTest extends TestCase
 
     public function testMultipleFlags()
     {
-        $this->reporter->reportFlag('flagA', true);
-        $this->reporter->reportFlag('flagB', false);
-        $this->reporter->reportFlag('flagC', true);
+        $this->reporter->reportFlag('flagA', true, false);
+        $this->reporter->reportFlag('flagB', false, false);
+        $this->reporter->reportFlag('flagC', true, false);
         $this->reporter->sendReport();
 
         $this->assertEquals($this->reporter->apiClient->calls, [[
@@ -104,25 +102,22 @@ class ReportingTest extends TestCase
                         'flags' => [
                             'flagA' => [
                                 [
-                                    'active' => true,
-                                    'value' => null,
-                                    'default' => null,
+                                    'value' => true,
+                                    'default' => false,
                                     'count' => 1
                                 ]
                             ],
                             'flagB' => [
                                 [
-                                    'active' => false,
-                                    'value' => null,
-                                    'default' => null,
+                                    'value' => false,
+                                    'default' => false,
                                     'count' => 1
                                 ]
                             ],
                             'flagC' => [
                                 [
-                                    'active' => true,
-                                    'value' => null,
-                                    'default' => null,
+                                    'value' => true,
+                                    'default' => false,
                                     'count' => 1
                                 ]
                             ],
@@ -135,12 +130,12 @@ class ReportingTest extends TestCase
 
     public function testSameFlagMultipleTimes()
     {
-        $this->reporter->reportFlag('flagA', true);
-        $this->reporter->reportFlag('flagA', false);
-        $this->reporter->reportFlag('flagA', false);
-        $this->reporter->reportFlag('flagA', true);
-        $this->reporter->reportFlag('flagA', true);
-        $this->reporter->reportFlag('flagA', true);
+        $this->reporter->reportFlag('flagA', true, null);
+        $this->reporter->reportFlag('flagA', false, null);
+        $this->reporter->reportFlag('flagA', false, null);
+        $this->reporter->reportFlag('flagA', true, null);
+        $this->reporter->reportFlag('flagA', true, null);
+        $this->reporter->reportFlag('flagA', true, null);
         $this->reporter->sendReport();
 
         $this->assertEquals($this->reporter->apiClient->calls, [[
@@ -153,14 +148,12 @@ class ReportingTest extends TestCase
                         'flags' => [
                             'flagA' => [
                                 [
-                                    'active' => true,
-                                    'value' => null,
+                                    'value' => true,
                                     'default' => null,
                                     'count' => 4
                                 ],
                                 [
-                                    'active' => false,
-                                    'value' => null,
+                                    'value' => false,
                                     'default' => null,
                                     'count' => 2
                                 ]
@@ -174,12 +167,12 @@ class ReportingTest extends TestCase
 
     public function testSameFlagMultipleTimesWithValueAndDefault()
     {
-        $this->reporter->reportFlag('flagA', true);
-        $this->reporter->reportFlag('flagA', true, null, null);
-        $this->reporter->reportFlag('flagA', true, 'foo', 'bar');
-        $this->reporter->reportFlag('flagA', true, 'foo', 'bar');
-        $this->reporter->reportFlag('flagA', true, 'foo', 'baz');
-        $this->reporter->reportFlag('flagA', true, 'baz', 'bar');
+        $this->reporter->reportFlag('flagA', null, null);
+        $this->reporter->reportFlag('flagA', null, null);
+        $this->reporter->reportFlag('flagA', 'foo', 'bar');
+        $this->reporter->reportFlag('flagA', 'foo', 'bar');
+        $this->reporter->reportFlag('flagA', 'foo', 'baz');
+        $this->reporter->reportFlag('flagA', 'baz', 'bar');
         $this->reporter->sendReport();
 
         $this->assertEquals($this->reporter->apiClient->calls, [[
@@ -192,25 +185,21 @@ class ReportingTest extends TestCase
                         'flags' => [
                             'flagA' => [
                                 [
-                                    'active' => true,
                                     'value' => null,
                                     'default' => null,
                                     'count' => 2
                                 ],
                                 [
-                                    'active' => true,
                                     'value' => 'foo',
                                     'default' => 'bar',
                                     'count' => 2
                                 ],
                                 [
-                                    'active' => true,
                                     'value' => 'foo',
                                     'default' => 'baz',
                                     'count' => 1
                                 ],
                                 [
-                                    'active' => true,
                                     'value' => 'baz',
                                     'default' => 'bar',
                                     'count' => 1

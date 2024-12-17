@@ -111,10 +111,10 @@ class TgglReporting
         $this->lastReportTime = time();
     }
 
-    public function reportFlag(string $slug, bool $active, $value = null, $default = null)
+    public function reportFlag(string $slug, $value, $default)
     {
         try {
-            $key = ($active ? '1' : '0') . json_encode($value) . json_encode($default);
+            $key = json_encode($value) . json_encode($default);
 
             if (!isset($this->flagsToReport[$slug])) {
                 $this->flagsToReport[$slug] = [];
@@ -122,7 +122,6 @@ class TgglReporting
 
             if (!isset($this->flagsToReport[$slug][$key])) {
                 $this->flagsToReport[$slug][$key] = [
-                    'active' => $active,
                     'value' => $value,
                     'default' => $default,
                     'count' => 0,

@@ -24,7 +24,7 @@ class TgglLocalClient
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['app'])
                     ? $options['reporting']['app']
                     : null,
-                'appPrefix' => 'php-client:1.5.0/TgglLocalClient',
+                'appPrefix' => 'php-client:2.0.0/TgglLocalClient',
                 'url' =>
                   array_key_exists('reporting', $options) && is_array($options['reporting']) && isset($options['reporting']['url'])
                     ? $options['reporting']['url']
@@ -69,23 +69,7 @@ class TgglLocalClient
         return $this->config;
     }
 
-    public function isActive($context, string $slug)
-    {
-        $inactiveVariation = new Variation();
-        $inactiveVariation->active = false;
-        $inactiveVariation->value = null;
-
-        $result = array_key_exists($slug, $this->config) ? $this->config[$slug]->eval($context) : $inactiveVariation;
-
-        if (isset($this->reporter)) {
-            $this->reporter->reportFlag($slug, $result->active, $result->value);
-            $this->reporter->reportContext($context);
-        }
-
-        return $result->active;
-    }
-
-    public function get($context, string $slug, $defaultValue = null)
+    public function get($context, string $slug, $defaultValue)
     {
         $inactiveVariation = new Variation();
         $inactiveVariation->active = false;
@@ -95,7 +79,7 @@ class TgglLocalClient
         $value = $result->active ? $result->value : $defaultValue;
 
         if (isset($this->reporter)) {
-            $this->reporter->reportFlag($slug, $result->active, $value, $defaultValue);
+            $this->reporter->reportFlag($slug, $value, $defaultValue);
             $this->reporter->reportContext($context);
         }
 

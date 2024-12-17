@@ -13,23 +13,12 @@ class TgglResponse
         $this->reporter = $reporter;
     }
 
-    public function isActive(string $slug)
-    {
-        $active = property_exists($this->flags, $slug);
-
-        if (isset($this->reporter)) {
-            $this->reporter->reportFlag($slug, $active, $active ? $this->flags->{$slug} : null);
-        }
-
-        return $active;
-    }
-
-    public function get(string $slug, $defaultValue = null)
+    public function get(string $slug, $defaultValue)
     {
         $value = property_exists($this->flags, $slug) ? $this->flags->{$slug} : $defaultValue;
 
         if (isset($this->reporter)) {
-            $this->reporter->reportFlag($slug, $active, $value, $defaultValue);
+            $this->reporter->reportFlag($slug, $value, $defaultValue);
         }
 
         return $value;
