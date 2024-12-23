@@ -45,11 +45,7 @@ $client = new TgglClient('YOUR_API_KEY');
 // An API call to Tggl is performed here
 $flags = $client->evalContext(new Context());
  
-if ($flags->isActive('my-feature')) {
-  // ...
-}
- 
-if ($flags->get('my-feature') === 'Variation A') {
+if ($flags->get('my-feature', 'Variation A') === 'Variation A') {
   // ...
 }
 ```
